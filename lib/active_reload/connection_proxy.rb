@@ -73,7 +73,7 @@ module ActiveReload
     end
 
     delegate :insert, :update, :delete, :create_table, :rename_table, :drop_table, :add_column, :remove_column,
-      :change_column, :change_column_default, :rename_column, :add_index, :remove_index, :initialize_schema_information,
+      :change_column, :change_column_default, :rename_column, :add_index, :remove_index, :initialize_schema_migrations_table, :select_values,
       :dump_schema_information, :execute, :columns, :to => :master
 
     def transaction(start_db_transaction = true, &block)
@@ -97,8 +97,12 @@ module ActiveReload
         end
         
         # hijack the original method
+        #only return if current is defined
+        #calling retrieve_connection thru current also trigger code that 
+        #raises a ConnectionError if the db is not created, this fixes the 
+        #problem with running rake db:create in rails 2.2.2
         def connection
-          @@connection_proxy
+          @@connection_proxy if @@connection_proxy.current
         end
       end
     end
