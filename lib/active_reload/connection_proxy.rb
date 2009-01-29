@@ -60,6 +60,7 @@ module ActiveReload
 
     def set_to_master!
       unless @current == :master
+#        @slave.logger.info caller.inspect
         @slave.logger.info "Switching to Master"
         @current = :master
       end
@@ -67,6 +68,7 @@ module ActiveReload
 
     def set_to_slave!
       unless @current == :slave
+#        @master.logger.info caller.inspect
         @master.logger.info "Switching to Slave"
         @current = :slave
       end
@@ -83,7 +85,8 @@ module ActiveReload
     end
 
     def method_missing(method, *args, &block)
-      current.send(method, *args, &block)
+      val = current.send(method, *args, &block)
+      val
     end
   end
 
